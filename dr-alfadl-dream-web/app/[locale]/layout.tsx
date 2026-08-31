@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Toaster } from "sonner";
 import { I18nProvider } from "@/components/providers/I18nProvider";
 import { Locale } from "@/types";
 import "../globals.css";
@@ -63,6 +64,7 @@ export default function LocaleLayout({ children, params }: LocaleLayoutProps) {
         }`}
       >
         <I18nProvider initialLocale={locale}>{children}</I18nProvider>
+        <Toaster position={isRTL ? "top-left" : "top-right"} dir={isRTL ? "rtl" : "ltr"} richColors />
       </body>
     </html>
   );

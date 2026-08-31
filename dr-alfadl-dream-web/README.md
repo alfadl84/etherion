@@ -82,12 +82,12 @@ A premium bilingual (Arabic/English) medical website built with Next.js 14, Type
 # Clone or extract the project
 cd dr-alfadl-dream-web
 
-# Install dependencies
+# Install dependencies (also generates the Prisma client)
 npm install
-# or
-yarn install
-# or
-pnpm install
+
+# Set up the database (SQLite file, no external service needed for dev)
+cp .env.example .env
+npm run db:migrate
 ```
 
 ### Development
@@ -182,7 +182,7 @@ dr-alfadl-dream-web/
 │   └── images/                     # Place doctor photos here
 │
 ├── tailwind.config.ts              # Custom colors, fonts, animations
-├── next.config.ts
+├── next.config.mjs
 ├── tsconfig.json
 └── postcss.config.js
 ```
@@ -210,19 +210,19 @@ import Image from "next/image";
 Replace `info@dr-alfadl.com` in `lib/translations.ts` and `components/layout/Footer.tsx`.
 
 ### 4. Payment Integration
-The store uses placeholder payment buttons. Integrate Moyasar by:
-1. Adding `@moyasar/core` package
-2. Replacing the `btn-gold` buy buttons in `StoreContent.tsx` with Moyasar payment triggers
+The store checkout dialog creates an `Order` record but does not charge a card yet — Moyasar / HyperPay / Mada / Apple Pay all require a merchant account and API keys, which only you can set up. Once you have them:
+1. Add the `@moyasar/core` (or chosen gateway's) package
+2. In `app/api/orders/route.ts`, after creating the order, call the gateway to create a payment/checkout session and return its URL/token
+3. On success (webhook or redirect), update the order's `status` to `PAID`
 
-### 5. Booking Backend
-The booking form in `BookingForm.tsx` has a simulated submit. Wire it to your backend:
-```tsx
-// In BookingForm.tsx, replace the setTimeout with:
-const response = await fetch("/api/booking", {
-  method: "POST",
-  body: JSON.stringify(data),
-});
-```
+### 5. Booking & Orders Backend
+Both are wired to a real database via Prisma:
+- Bookings: `BookingForm.tsx` → `POST /api/bookings` → `Booking` table.
+- Store purchases: clicking a product opens `CheckoutDialog.tsx` → `POST /api/orders` → `Order` table (status starts as `PENDING_PAYMENT` — no payment gateway is wired up yet, see below).
+
+Dev uses a local SQLite file (`prisma/dev.db`, gitignored). For production on serverless hosting (Vercel), switch `prisma/schema.prisma`'s datasource `provider` to `"postgresql"`, point `DATABASE_URL` at a hosted Postgres instance (Supabase / Neon / Railway all have free tiers), and run `npx prisma migrate deploy`. SQLite is fine as-is for a single persistent server/VPS.
+
+View/edit the data with `npm run db:studio` (opens Prisma Studio).
 
 ### 6. AI Tools
 The symptom checker demo in `AIToolsContent.tsx` returns random canned responses. Integrate Claude API:
@@ -275,7 +275,7 @@ EXPOSE 3000
 CMD ["node", "server.js"]
 ```
 
-Add `output: "standalone"` to `next.config.ts` for Docker.
+Add `output: "standalone"` to `next.config.mjs` for Docker.
 
 ### Self-hosted VPS
 

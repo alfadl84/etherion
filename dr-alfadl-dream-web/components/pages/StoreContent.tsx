@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { ShoppingCart, Star, Package, Shield, Download, Headphones, RefreshCw } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { SectionHeader } from "@/components/common/SectionHeader";
 import { AnimatedCard } from "@/components/common/AnimatedCard";
+import { CheckoutDialog } from "@/components/common/CheckoutDialog";
 import { formatPrice } from "@/lib/utils";
 
 const productColors = [
@@ -27,6 +29,7 @@ const paymentMethods = ["Moyasar", "HyperPay", "Apple Pay", "Mada"];
 
 export function StoreContent() {
   const { locale, t, isRTL } = useI18n();
+  const [checkoutIndex, setCheckoutIndex] = useState<number | null>(null);
 
   const guarantees = isRTL ? [
     { icon: Shield, title: "ضمان استرداد 14 يومًا", desc: "غير راضٍ؟ نسترد مبلغك كاملًا" },
@@ -158,6 +161,7 @@ export function StoreContent() {
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.97 }}
+                        onClick={() => setCheckoutIndex(i)}
                         className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gold-gradient text-navy-900 text-sm font-bold shadow-gold"
                       >
                         <ShoppingCart className="w-4 h-4" />
@@ -189,6 +193,16 @@ export function StoreContent() {
           </motion.div>
         </div>
       </section>
+
+      {checkoutIndex !== null && (
+        <CheckoutDialog
+          open={checkoutIndex !== null}
+          onOpenChange={(next) => !next && setCheckoutIndex(null)}
+          productIndex={checkoutIndex}
+          productTitle={t.store.products[checkoutIndex].title}
+          price={t.store.products[checkoutIndex].price}
+        />
+      )}
     </>
   );
 }

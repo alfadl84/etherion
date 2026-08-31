@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // SQLite for local/dev and single-instance hosting. For serverless hosting
+  // (e.g. Vercel), switch provider to "postgresql" and point DATABASE_URL at
+  // a hosted Postgres instance (Supabase, Neon, Railway, ...), then run
+  // `npx prisma migrate deploy`.
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// SQLite has no native enum type, so status fields are plain strings.
+// Booking.status: "PENDING" | "CONFIRMED" | "CANCELLED"
+// Order.status:   "PENDING_PAYMENT" | "PAID" | "CANCELLED"
+
+model Booking {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  service   String
+  date      String
+  message   String?
+  locale    String   @default("en")
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id           String   @id @default(cuid())
+  productIndex Int
+  productTitle String
+  price        Float
+  currency     String
+  name         String
+  email        String
+  phone        String
+  locale       String   @default("en")
+  status       String   @default("PENDING_PAYMENT")
+  createdAt    DateTime @default(now())
+}

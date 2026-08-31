@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Calendar, Phone, Mail, User, MessageSquare, Send, CheckCircle, ChevronDown } from "lucide-react";
+import { toast } from "sonner";
 import { useI18n } from "@/lib/i18n";
 
 const schema = z.object({
@@ -31,10 +32,22 @@ export function BookingForm() {
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
   const onSubmit = async (data: FormData) => {
-    await new Promise((res) => setTimeout(res, 1500));
-    console.log("Booking data:", data);
-    setSubmitted(true);
-    setTimeout(() => { setSubmitted(false); reset(); }, 5000);
+    try {
+      const res = await fetch("/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...data, locale }),
+      });
+      if (!res.ok) throw new Error("request_failed");
+      setSubmitted(true);
+      setTimeout(() => { setSubmitted(false); reset(); }, 5000);
+    } catch {
+      toast.error(
+        isRTL
+          ? "تعذر إرسال الحجز. حاول مرة أخرى أو تواصل معنا عبر واتساب."
+          : "Couldn't send your booking. Please try again or contact us via WhatsApp."
+      );
+    }
   };
 
   const inputClass = (error?: boolean) =>

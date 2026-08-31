@@ -3,16 +3,14 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  Microscope, Zap, Search, Liver, Activity, Flame,
+  Microscope, Zap, Search, Activity, Flame,
   Scissors, Target, ArrowRight
 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { SectionHeader } from "@/components/common/SectionHeader";
 import { AnimatedCard } from "@/components/common/AnimatedCard";
 
-const serviceIcons = [Microscope, Zap, Search, Liver, Activity, Flame, Scissors, Target];
-
-// Use a valid lucide icon for Liver fallback
+// lucide-react has no "Liver" icon — use this custom one instead.
 function LiverIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className={className}>

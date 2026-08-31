@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 interface AnimatedCardProps {
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
   index?: number;
   hover?: boolean;
 }
@@ -13,6 +14,7 @@ interface AnimatedCardProps {
 export function AnimatedCard({
   children,
   className,
+  style,
   index = 0,
   hover = true,
 }: AnimatedCardProps) {
@@ -28,6 +30,7 @@ export function AnimatedCard({
       }}
       whileHover={hover ? { y: -4, transition: { duration: 0.2 } } : undefined}
       className={cn(className)}
+      style={style}
     >
       {children}
     </motion.div>

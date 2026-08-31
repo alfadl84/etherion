@@ -3,14 +3,12 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  Microscope, Zap, Search, Liver, Activity, Flame,
+  Microscope, Zap, Search, Activity, Flame,
   Scissors, Target, ArrowRight
 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { SectionHeader } from "@/components/common/SectionHeader";
 import { AnimatedCard } from "@/components/common/AnimatedCard";
-
-const serviceIcons = [Microscope, Zap, Search, Liver, Activity, Flame, Scissors, Target];
 
 // Use a valid lucide icon for Liver fallback
 function LiverIcon({ className }: { className?: string }) {
